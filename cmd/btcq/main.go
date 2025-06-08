@@ -14,8 +14,8 @@ func main() {
 	// So create Client in main to concurrent
 	httpClient := &http.Client{Timeout: 10 * time.Second}
 
-	// Get BTC/USDT prices
-	btcPriceInfo, err := cryptopulse.FetchCryptoPrice(httpClient, "BTCUSDT")
+	// Get BTC/USDT prices from Binance (using default config)
+	btcPriceInfo, err := cryptopulse.FetchCryptoPrice(httpClient, "BTCUSDT", nil)
 	if err != nil {
 		log.Fatalf("Error fetching BTC price: %v", err)
 	}
@@ -39,4 +39,13 @@ func main() {
 		btcPriceInCny,
 		usdCnyRateInfo.QuoteCurrency,
 	)
+
+	// 示例：如果要从其他交易所获取价格
+	// okxConfig := &cryptopulse.CryptoExchangeConfig{
+	//     BaseURL:     "https://www.okx.com",
+	//     URLPath:     "/api/v5/market/ticker",
+	//     Source:      "okx",
+	//     SymbolParam: "instId",
+	// }
+	// btcPriceFromOKX, err := cryptopulse.FetchCryptoPrice(httpClient, "BTC-USDT", okxConfig)
 }

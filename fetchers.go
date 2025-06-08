@@ -10,44 +10,77 @@ import (
 	"time"
 )
 
-// FetchCryptoPrice fetches the latest price for a given cryptocurrency symbol from the Binance API.
-//   - client: The *http.Client to use for the request.
-//   - symbol: The crypto symbol, e.g., "BTCUSDT".
-//
-// It returns a *CryptoPrice with the price information on success, or an error on failure.
-func FetchCryptoPrice(client *http.Client, symbol string) (*CryptoPrice, error) {
+// defaultBinanceConfig 返回币安交易所的默认配置
+func defaultBinanceConfig() *CryptoExchangeConfig {
+	return &CryptoExchangeConfig{
+		BaseURL:     "https://api.binance.com",
+		URLPath:     "/api/v3/ticker/price",
+		Source:      "binance",
+		SymbolParam: "symbol",
+	}
+}
+
+// FetchCryptoPrice 从指定的交易所获取加密货币价格
+// client: HTTP客户端
+// symbol: 交易对符号，例如 "BTCUSDT"
+// config: 交易所配置，如果为nil则使用默认的币安配置
+func FetchCryptoPrice(client *http.Client, symbol string, config *CryptoExchangeConfig) (*CryptoPrice, error) {
 	if client == nil {
 		return nil, fmt.Errorf("http client cannot be nil")
 	}
 
-	url := fmt.Sprintf(binanceAPIURL, symbol)
+	if config == nil {
+		config = defaultBinanceConfig()
+	}
+
+	// 构建请求URL
+	url := fmt.Sprintf("%s%s?%s=%s",
+		config.BaseURL,
+		config.URLPath,
+		config.SymbolParam,
+		symbol,
+	)
+
 	resp, err := client.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch price for %s from Binance: %w", symbol, err)
+		return nil, fmt.Errorf("failed to fetch price for %s from %s: %w",
+			symbol,
+			config.Source,
+			err,
+		)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Binance API returned non-200 status for %s: %d", symbol, resp.StatusCode)
-	}
-
-	body, err := io.ReadAll(resp.Body) // 或 io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body for %s: %w", symbol, err)
 	}
 
-	var binanceResp struct { // 临时的内部结构体
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s API returned non-200 status for %s: %d, body: %s",
+			config.Source,
+			symbol,
+			resp.StatusCode,
+			body,
+		)
+	}
+
+	var response struct {
 		Symbol string `json:"symbol"`
 		Price  string `json:"price"`
 	}
-	if err := json.Unmarshal(body, &binanceResp); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal Binance response for %s: %w", symbol, err)
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal %s response for %s: %w",
+			config.Source,
+			symbol,
+			err,
+		)
 	}
 
 	return &CryptoPrice{
-		Symbol:    binanceResp.Symbol,
-		Price:     binanceResp.Price,
-		Source:    "binance",
+		Symbol:    response.Symbol,
+		Price:     response.Price,
+		Source:    config.Source,
 		FetchedAt: time.Now().UTC(),
 	}, nil
 }
