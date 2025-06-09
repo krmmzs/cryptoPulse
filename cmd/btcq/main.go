@@ -19,10 +19,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "OPTIONS:\n")
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\nEXAMPLES:\n")
-		fmt.Fprintf(os.Stderr, "  %s              # fetch both crypto and fiat data (default)\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -crypto      # fetch cryptocurrency prices only\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -fiat        # fetch fiat exchange rates only\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -help        # show this help message\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s                        # fetch both crypto and fiat data (default: BTCUSDT)\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -crypto                # fetch cryptocurrency prices only\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -fiat                  # fetch fiat exchange rates only\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -pair ETHUSDT          # fetch ETHUSDT price from Binance\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -crypto -pair ADAUSDT  # fetch only ADAUSDT price\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -help                  # show this help message\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "ENVIRONMENT:\n")
 		fmt.Fprintf(os.Stderr, "  EXCHANGERATE_API_KEY    Required for fiat currency exchange rates\n\n")
 	}
@@ -30,6 +32,7 @@ func main() {
 	// Define command-line flags
 	cryptoFlag := flag.Bool("crypto", false, "fetch cryptocurrency prices only")
 	fiatFlag := flag.Bool("fiat", false, "fetch fiat currency exchange rates only")
+	pairFlag := flag.String("pair", "BTCUSDT", "trading pair to fetch (format depends on exchange, e.g., BTCUSDT for Binance, BTC-USDT for OKX)")
 	flag.Parse()
 
 	// Clients and Transports are safe for concurrent use by multiple goroutines and for efficiency should only be created once and re-used.
@@ -42,12 +45,12 @@ func main() {
 	fetchFiat := *fiatFlag || (!*cryptoFlag && !*fiatFlag)     // default behavior includes fiat
 
 	if fetchCrypto {
-		// Get BTC/USDT prices from Binance (using default config)
-		btcPriceInfo, err := cryptopulse.FetchCryptoPrice(httpClient, "BTCUSDT", nil)
+		// Get cryptocurrency prices from Binance (using default config)
+		cryptoPriceInfo, err := cryptopulse.FetchCryptoPrice(httpClient, *pairFlag, nil)
 		if err != nil {
-			log.Fatalf("Error fetching BTC price: %v", err)
+			log.Fatalf("Error fetching %s price: %v", *pairFlag, err)
 		}
-		fmt.Printf("Fetched price: %+v\n", *btcPriceInfo)
+		fmt.Printf("Fetched price: %+v\n", *cryptoPriceInfo)
 	}
 
 	if fetchFiat {
