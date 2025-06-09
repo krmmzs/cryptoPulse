@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-cryptoPulse is a Go library and CLI tool for fetching cryptocurrency prices and fiat currency exchange rates. The main purpose is to quickly get BTC/USDT prices from crypto exchanges (primarily Binance) and USD/CNY exchange rates to calculate BTC prices in CNY.
+cryptoPulse is a Go library and CLI tool for fetching cryptocurrency prices and fiat currency exchange rates. The main purpose is to quickly get BTC/USDT prices from crypto exchanges (primarily Binance) and USD/CNY exchange rates for display.
 
 ## Common Commands
 
@@ -38,7 +38,7 @@ go mod download
 
 - `FetchCryptoPrice()`: Fetches crypto prices from exchanges (configurable, defaults to Binance)
 - `FetchFiatRate()`: Fetches fiat exchange rates from exchangerate-api.com (requires EXCHANGERATE_API_KEY env var)
-- `ConvertCryptoToFiat()`: Converts crypto prices to target fiat currency
+- `ConvertCryptoToFiat()`: Converts crypto prices to target fiat currency (available in library but not used in main CLI)
 
 ### Configuration
 
