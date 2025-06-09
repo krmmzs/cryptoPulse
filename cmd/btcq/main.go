@@ -37,6 +37,7 @@ func main() {
 	httpClient := &http.Client{Timeout: 10 * time.Second}
 
 	// Determine what to fetch based on flags
+	// fetchCrypto: true or all of flag is false(default) to print
 	fetchCrypto := *cryptoFlag || (!*cryptoFlag && !*fiatFlag) // default behavior includes crypto
 	fetchFiat := *fiatFlag || (!*cryptoFlag && !*fiatFlag)     // default behavior includes fiat
 
