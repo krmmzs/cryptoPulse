@@ -14,9 +14,9 @@ import (
 // Result: "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
 func defaultBinanceConfig() *CryptoExchangeConfig {
 	return &CryptoExchangeConfig{
-		BaseURL:     "https://api.binance.com",
-		URLPath:     "/api/v3/ticker/price",
-		Source:      "binance",
+		BaseURL:    "https://api.binance.com",
+		URLPath:    "/api/v3/ticker/price",
+		Source:     "binance",
 		QueryParam: "symbol",
 	}
 }
