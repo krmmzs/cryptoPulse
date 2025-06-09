@@ -11,12 +11,13 @@ import (
 )
 
 // defaultBinanceConfig 返回币安交易所的默认配置
+// Result: "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
 func defaultBinanceConfig() *CryptoExchangeConfig {
 	return &CryptoExchangeConfig{
 		BaseURL:     "https://api.binance.com",
 		URLPath:     "/api/v3/ticker/price",
 		Source:      "binance",
-		SymbolParam: "symbol",
+		QueryParam: "symbol",
 	}
 }
 
@@ -37,7 +38,7 @@ func FetchCryptoPrice(client *http.Client, symbol string, config *CryptoExchange
 	url := fmt.Sprintf("%s%s?%s=%s",
 		config.BaseURL,
 		config.URLPath,
-		config.SymbolParam,
+		config.QueryParam,
 		symbol,
 	)
 

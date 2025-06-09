@@ -10,8 +10,8 @@ type CryptoExchangeConfig struct {
 	URLPath string
 	// Source 是数据来源的标识，例如 "binance"
 	Source string
-	// SymbolParam 是交易对参数的名称，例如 "symbol"
-	SymbolParam string
+	// QueryParam 是交易对参数的名称，例如 "symbol"(Binance), "instId"(OKX), "product_id"(Coinbase)
+	QueryParam string
 }
 
 // CryptoPrice represents price information for binance.
