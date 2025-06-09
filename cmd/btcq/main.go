@@ -28,18 +28,6 @@ func main() {
 	}
 	fmt.Printf("Fetched rate: %+v\n", *usdCnyRateInfo)
 
-	// 计算 BTC 的 CNY 价格
-	btcPriceInCny, err := cryptopulse.ConvertCryptoToFiat(btcPriceInfo, usdCnyRateInfo)
-	if err != nil {
-		log.Fatalf("Error converting BTC to CNY: %v", err)
-	}
-	fmt.Printf("BTC Price in CNY (from %s and %s): %.2f %s\n",
-		btcPriceInfo.Source,
-		usdCnyRateInfo.Source,
-		btcPriceInCny,
-		usdCnyRateInfo.QuoteCurrency,
-	)
-
 	// 示例：如果要从其他交易所获取价格
 	// okxConfig := &cryptopulse.CryptoExchangeConfig{
 	//     BaseURL:     "https://www.okx.com",

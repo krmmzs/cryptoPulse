@@ -103,28 +103,33 @@ func FetchFiatRate(client *http.Client, baseCurrency, quoteCurrency string) (*Fi
 	}
 
 	url := fmt.Sprintf(exchangeRateAPIURL, apiKey, baseCurrency)
-	log.Printf("DEBUG: 正在从URL %s 获取法定货币汇率", url)
+	/* log.Printf("DEBUG: 正在从URL %s 获取法定货币汇率", url) */
 	resp, err := client.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("无法获取 %s/%s 的汇率: %w", baseCurrency, quoteCurrency, err)
 	}
 	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("无法读取 %s/%s 的响应体: %w", baseCurrency, quoteCurrency, err)
 	}
-	log.Printf("DEBUG: %s/%s 的原始API响应: %s", baseCurrency, quoteCurrency, string(body))
+	/* log.Printf("DEBUG: %s/%s 的原始API响应: %s", baseCurrency, quoteCurrency, string(body)) */
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("ExchangeRate API (v6) 返回非200状态码给 %s/%s: %d. 响应体: %s", baseCurrency, quoteCurrency, resp.StatusCode, string(body))
 	}
+
 	var apiResp exchangeRateAPIResponse // 使用新结构
 	if err := json.Unmarshal(body, &apiResp); err != nil {
 		return nil, fmt.Errorf("无法将ExchangeRate API (v6) 响应的 %s/%s 解码: %w. 响应体是: %s", baseCurrency, quoteCurrency, err, string(body))
 	}
+
 	if apiResp.Result != "success" {
 		// API可能会返回200 OK，但在JSON体中表示错误
 		return nil, fmt.Errorf("ExchangeRate API (v6) 对 %s/%s 报告了错误: %s. 完整响应: %s", baseCurrency, quoteCurrency, apiResp.Result, string(body))
 	}
+
 	// 从ConversionRates映射中提取汇率
 	rate, ok := apiResp.ConversionRates[quoteCurrency]
 	if !ok {
@@ -136,6 +141,7 @@ func FetchFiatRate(client *http.Client, baseCurrency, quoteCurrency string) (*Fi
 		log.Printf("DEBUG: 基础为 %s 的可转换汇率: %v", apiResp.BaseCode, availableCurrencies)
 		return nil, fmt.Errorf("目标货币 %s 未在ExchangeRate API (v6) 响应中找到基础货币 %s. 在调试日志中检查可用货币。", quoteCurrency, apiResp.BaseCode)
 	}
+
 	return &FiatRate{
 		BaseCurrency:  apiResp.BaseCode, // 使用API响应中的基础代码
 		QuoteCurrency: quoteCurrency,
