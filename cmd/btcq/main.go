@@ -45,21 +45,33 @@ func main() {
 	fetchFiat := *fiatFlag || (!*cryptoFlag && !*fiatFlag)     // default behavior includes fiat
 
 	if fetchCrypto {
-		// Get cryptocurrency prices from Binance (using default config)
-		cryptoPriceInfo, err := cryptopulse.FetchCryptoPrice(httpClient, *pairFlag, nil)
-		if err != nil {
-			log.Fatalf("Error fetching %s price: %v", *pairFlag, err)
+		// 创建Binance提供商实例
+		binanceProvider := cryptopulse.NewBinanceProvider()
+		
+		// 验证交易对格式
+		if !binanceProvider.ValidateSymbol(*pairFlag) {
+			log.Printf("Warning: %s may not be a valid symbol for %s", *pairFlag, binanceProvider.GetName())
+			log.Printf("Supported symbols include: %v", binanceProvider.GetSupportedSymbols()[:5]) // 显示前5个作为示例
 		}
-		fmt.Printf("Fetched price: %+v\n", *cryptoPriceInfo)
+		
+		// 使用接口方法获取价格
+		cryptoPriceInfo, err := binanceProvider.FetchCryptoPrice(httpClient, *pairFlag, nil)
+		if err != nil {
+			log.Fatalf("Error fetching %s price from %s: %v", *pairFlag, binanceProvider.GetName(), err)
+		}
+		fmt.Printf("Fetched %s price from %s: %+v\n", *pairFlag, binanceProvider.GetName(), *cryptoPriceInfo)
 	}
 
 	if fetchFiat {
-		// 获取 USD/CNY 汇率
-		usdCnyRateInfo, err := cryptopulse.FetchFiatRate(httpClient, "USD", "CNY")
+		// 创建汇率API提供商实例
+		fiatProvider := cryptopulse.NewExchangeRateAPIProvider()
+		
+		// 使用接口方法获取汇率
+		usdCnyRateInfo, err := fiatProvider.FetchFiatRate(httpClient, "USD", "CNY")
 		if err != nil {
-			log.Fatalf("Error fetching USD/CNY rate: %v", err)
+			log.Fatalf("Error fetching USD/CNY rate from %s: %v", fiatProvider.GetName(), err)
 		}
-		fmt.Printf("Fetched rate: %+v\n", *usdCnyRateInfo)
+		fmt.Printf("Fetched USD/CNY rate from %s: %+v\n", fiatProvider.GetName(), *usdCnyRateInfo)
 	}
 
 	// 示例：如果要从其他交易所获取价格

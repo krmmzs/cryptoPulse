@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 cryptoPulse is a Go library and CLI tool for fetching cryptocurrency prices and fiat currency exchange rates. The main purpose is to quickly get BTC/USDT prices from crypto exchanges (primarily Binance) and USD/CNY exchange rates for display.
 
+**📋 Architecture**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed diagrams, mental models, and extension guides.
+
 ## Common Commands
 
 ### Build and Run
