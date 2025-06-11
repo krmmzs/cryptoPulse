@@ -47,13 +47,13 @@ func main() {
 	if fetchCrypto {
 		// 创建Binance提供商实例
 		binanceProvider := cryptopulse.NewBinanceProvider()
-		
+
 		// 验证交易对格式
 		if !binanceProvider.ValidateSymbol(*pairFlag) {
 			log.Printf("Warning: %s may not be a valid symbol for %s", *pairFlag, binanceProvider.GetName())
 			log.Printf("Supported symbols include: %v", binanceProvider.GetSupportedSymbols()[:5]) // 显示前5个作为示例
 		}
-		
+
 		// 使用接口方法获取价格
 		cryptoPriceInfo, err := binanceProvider.FetchCryptoPrice(httpClient, *pairFlag, nil)
 		if err != nil {
@@ -65,7 +65,7 @@ func main() {
 	if fetchFiat {
 		// 创建汇率API提供商实例
 		fiatProvider := cryptopulse.NewExchangeRateAPIProvider()
-		
+
 		// 使用接口方法获取汇率
 		usdCnyRateInfo, err := fiatProvider.FetchFiatRate(httpClient, "USD", "CNY")
 		if err != nil {
