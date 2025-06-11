@@ -11,6 +11,7 @@ import (
 )
 
 // defaultBinanceConfig 返回币安交易所的默认配置
+// see https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#symbol-price-ticker
 // Result: "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
 func defaultBinanceConfig() *CryptoExchangeConfig {
 	return &CryptoExchangeConfig{
@@ -21,11 +22,11 @@ func defaultBinanceConfig() *CryptoExchangeConfig {
 	}
 }
 
-// FetchCryptoPrice 从指定的交易所获取加密货币价格
+// fetchCryptoPrice 从指定的交易所获取加密货币价格（内部函数）
 // client: HTTP客户端
 // symbol: 交易对符号，例如 "BTCUSDT"
 // config: 交易所配置，如果为nil则使用默认的币安配置
-func FetchCryptoPrice(client *http.Client, symbol string, config *CryptoExchangeConfig) (*CryptoPrice, error) {
+func fetchCryptoPrice(client *http.Client, symbol string, config *CryptoExchangeConfig) (*CryptoPrice, error) {
 	if client == nil {
 		return nil, fmt.Errorf("http client cannot be nil")
 	}
@@ -42,7 +43,8 @@ func FetchCryptoPrice(client *http.Client, symbol string, config *CryptoExchange
 		symbol,
 	)
 
-	resp, err := client.Get(url)
+	// see https://pkg.go.dev/net/http#pkg-overview
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch price for %s from %s: %w",
 			symbol,
@@ -86,13 +88,13 @@ func FetchCryptoPrice(client *http.Client, symbol string, config *CryptoExchange
 	}, nil
 }
 
-// FetchFiatRate fetches the latest exchange rate between two fiat currencies from the exchangerate.host API.
+// fetchFiatRate fetches the latest exchange rate between two fiat currencies from the exchangerate.host API（内部函数）.
 //   - client: The *http.Client to use for the request.
 //   - baseCurrency: The base currency code, e.g., "USD".
 //   - quoteCurrency: The quote currency code, e.g., "EUR".
 //
 // It returns a *FiatRate with the rate information on success, or an error on failure.
-func FetchFiatRate(client *http.Client, baseCurrency, quoteCurrency string) (*FiatRate, error) {
+func fetchFiatRate(client *http.Client, baseCurrency, quoteCurrency string) (*FiatRate, error) {
 	if client == nil {
 		return nil, fmt.Errorf("http client cannot be nil")
 	}

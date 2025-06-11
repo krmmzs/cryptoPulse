@@ -16,3 +16,6 @@
 .vscode/
 *.swp
 *~
+
+# Build output
+bin/

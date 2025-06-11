@@ -12,13 +12,13 @@ cryptoPulse is a Go library and CLI tool for fetching cryptocurrency prices and 
 
 ### Build and Run
 ```bash
-go build ./cmd/btcq
-./btcq                     # fetch both crypto and fiat data (default: BTCUSDT)
-./btcq -crypto             # fetch cryptocurrency prices only
-./btcq -fiat               # fetch fiat exchange rates only
-./btcq -pair ETHUSDT       # fetch ETHUSDT price from Binance
-./btcq -crypto -pair ADAUSDT  # fetch only ADAUSDT price
-./btcq -help               # show help message
+go build -o bin/btcq ./cmd/btcq
+./bin/btcq                     # fetch both crypto and fiat data (default: BTCUSDT)
+./bin/btcq -crypto             # fetch cryptocurrency prices only
+./bin/btcq -fiat               # fetch fiat exchange rates only
+./bin/btcq -pair ETHUSDT       # fetch ETHUSDT price from Binance
+./bin/btcq -crypto -pair ADAUSDT  # fetch only ADAUSDT price
+./bin/btcq -help               # show help message
 ```
 
 ### Run directly

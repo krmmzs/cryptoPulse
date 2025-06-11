@@ -34,9 +34,9 @@ func (b *BinanceProvider) FetchCryptoPrice(client *http.Client, symbol string, c
 	if config == nil {
 		config = b.defaultConfig
 	}
-	
-	// 复用现有的FetchCryptoPrice函数
-	return FetchCryptoPrice(client, symbol, config)
+
+	// 复用现有的fetchCryptoPrice函数
+	return fetchCryptoPrice(client, symbol, config)
 }
 
 // GetName 返回提供商名称
@@ -50,13 +50,17 @@ func (b *BinanceProvider) ValidateSymbol(symbol string) bool {
 	if symbol == "" {
 		return false
 	}
-	
+
 	// Binance交易对格式：大写字母，长度通常6-12位，无分隔符
 	// 例如：BTCUSDT, ETHUSDT, ADAUSDT
+	// ^ - 字符串开始
+	// [A-Z] - 只允许大写英文字母
+	// {6,12} - 长度限制在6到12个字符之间
+	// $ - 字符串结束
 	matched, _ := regexp.MatchString(`^[A-Z]{6,12}$`, symbol)
-	return matched && (strings.HasSuffix(symbol, "USDT") || 
-		strings.HasSuffix(symbol, "BTC") || 
-		strings.HasSuffix(symbol, "ETH") || 
+	return matched && (strings.HasSuffix(symbol, "USDT") ||
+		strings.HasSuffix(symbol, "BTC") ||
+		strings.HasSuffix(symbol, "ETH") ||
 		strings.HasSuffix(symbol, "BNB"))
 }
 
@@ -81,8 +85,8 @@ func NewExchangeRateAPIProvider() *ExchangeRateAPIProvider {
 
 // FetchFiatRate 实现 FiatRateProvider 接口 - 获取法币汇率
 func (e *ExchangeRateAPIProvider) FetchFiatRate(client *http.Client, baseCurrency, quoteCurrency string) (*FiatRate, error) {
-	// 复用现有的FetchFiatRate函数
-	return FetchFiatRate(client, baseCurrency, quoteCurrency)
+	// 复用现有的fetchFiatRate函数
+	return fetchFiatRate(client, baseCurrency, quoteCurrency)
 }
 
 // GetName 返回提供商名称
@@ -93,9 +97,8 @@ func (e *ExchangeRateAPIProvider) GetName() string {
 // GetSupportedCurrencies 返回支持的主要货币列表
 func (e *ExchangeRateAPIProvider) GetSupportedCurrencies() []string {
 	return []string{
-		"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", 
+		"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY",
 		"SEK", "NZD", "MXN", "SGD", "HKD", "NOK", "TRY", "RUB",
 		"INR", "BRL", "ZAR", "KRW", "THB", "PLN", "CZK", "HUF",
 	}
 }
-

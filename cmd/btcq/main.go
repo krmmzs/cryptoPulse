@@ -74,12 +74,7 @@ func main() {
 		fmt.Printf("Fetched USD/CNY rate from %s: %+v\n", fiatProvider.GetName(), *usdCnyRateInfo)
 	}
 
-	// 示例：如果要从其他交易所获取价格
-	// okxConfig := &cryptopulse.CryptoExchangeConfig{
-	//     BaseURL:     "https://www.okx.com",
-	//     URLPath:     "/api/v5/market/ticker",
-	//     Source:      "okx",
-	//     QueryParam: "instId",
-	// }
-	// btcPriceFromOKX, err := cryptopulse.FetchCryptoPrice(httpClient, "BTC-USDT", okxConfig)
+	// 示例：如果要从其他交易所获取价格，需要创建相应的Provider
+	// okxProvider := cryptopulse.NewOKXProvider() // 需要先实现OKXProvider
+	// btcPriceFromOKX, err := okxProvider.FetchCryptoPrice(httpClient, "BTC-USDT", nil)
 }
