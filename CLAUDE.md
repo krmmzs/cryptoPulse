@@ -31,6 +31,13 @@ go run ./cmd/btcq -crypto -pair ADAUSDT   # fetch only ADAUSDT price
 go run ./cmd/btcq -help                # show help message
 ```
 
+### Install and Uninstall
+```bash
+make install       # install btcq binary to GOPATH/bin using go install
+make uninstall     # remove installed btcq binary from GOPATH/bin
+go install ./cmd/btcq   # alternative direct install command
+```
+
 ### Module management
 ```bash
 go mod tidy
