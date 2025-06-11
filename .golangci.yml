@@ -1,0 +1,78 @@
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  
+  govet:
+    check-shadowing: true
+  
+  gocyclo:
+    min-complexity: 15
+  
+  misspell:
+    locale: US
+  
+  lll:
+    line-length: 120
+  
+  gofmt:
+    simplify: true
+  
+  goimports:
+    local-prefixes: github.com/krmmzs/cryptoPulse
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - lll
+    - gocyclo
+    - unparam
+    - nakedret
+    - prealloc
+    - exportloopref
+    - nolintlint
+  
+  disable:
+    - maligned # deprecated
+    - interfacer # deprecated
+    - scopelint # deprecated
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+    
+    # Exclude known linters from partially hard-to-fix issues
+    - linters:
+        - lll
+      source: "^//go:generate "
+
+  # Maximum issues count per one linter. Set to 0 to disable
+  max-issues-per-linter: 0
+  
+  # Maximum count of issues with the same text. Set to 0 to disable
+  max-same-issues: 0
